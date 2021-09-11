@@ -23,11 +23,16 @@ async def handleLogin(webs, clients, auth, channels, default_channel):
 
     out = []
 
-    for i in clients:
+    for ii, i in enumerate(clients):
 
         if i[0] != auth.token:
 
-            await i[2].send(formatMessage('join', username = auth.username))
+            try:
+
+                await i[2].send(formatMessage('join', username = auth.username))
+            
+            except:
+                del clients[ii]
 
             out.append(i[1])
 
@@ -54,3 +59,6 @@ async def getUserList(webs, clients, auth):
             }
         )
     )
+
+async def sendToAll(webs, clients, message):
+    pass
