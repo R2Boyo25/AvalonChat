@@ -4,7 +4,12 @@ from utils.auth import Auth
 
 import asyncio
 import websockets
-import json, random, os
+import json, random, os, sys
+
+try:
+    port = sys.argv[1]
+except:
+    port = 8090
 
 os.system('clear')
 
@@ -126,7 +131,7 @@ async def delDuplicateWebsockets():
 async def main():
     global channels
     print('Server Ready')
-    async with websockets.serve(handleMessage, "0.0.0.0", 8090, ping_timeout=None):
+    async with websockets.serve(handleMessage, "0.0.0.0", port, ping_timeout=None):
         try:
             await asyncio.Future()  # run forever
         except:

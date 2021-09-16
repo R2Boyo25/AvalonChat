@@ -7,7 +7,7 @@ websockett = 0
 
 async def hello():
     global websockett
-    uri = "ws://localhost:8090"
+    uri = "ws://weebsockets2.heroku.com:8090"
     async with websockets.connect(uri) as websocket:
         websockett = websocket
 
