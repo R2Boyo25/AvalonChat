@@ -8,7 +8,7 @@ async def main(WSHandler, ws):
 async def onConnect(ws):
     await ws.send('{"type":"auth", "token":"abcd1234"}')
 
-h = WebsJSON.WSHandler('ws://0.0.0.0:8090', onConnect=onConnect, thread=main)
+h = WebsJSON.WSHandler('ws://2.tcp.ngrok.io:12104', onConnect=onConnect, thread=main)
 
 @h.handle('message')
 async def messageHandler(ctx, message, channel, author):

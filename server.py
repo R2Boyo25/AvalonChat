@@ -131,7 +131,7 @@ async def delDuplicateWebsockets():
 async def main():
     global channels
     print('Server Ready')
-    async with websockets.serve(handleMessage, "0.0.0.0", port, ping_timeout=None):
+    async with websockets.serve(handleMessage, "0.0.0.0", port, ping_timeout=None, ping_interval=None):
         try:
             await asyncio.Future()  # run forever
         except:

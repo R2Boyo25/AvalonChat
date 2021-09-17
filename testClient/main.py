@@ -26,7 +26,7 @@ async def receiveData(websocket):
 
 async def main(loop):
     await asyncio.sleep(0)
-    uri = "ws://localhost:8090"
+    uri = "ws://2.tcp.ngrok.io:12104"
     async with websockets.connect(uri) as websocket:
         await main2(websocket)
         t1 = asyncio.create_task(receiveData(websocket))
