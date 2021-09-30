@@ -20,10 +20,15 @@ async def auth(message, websocket, CLIENTS, context):
 
         await handleLogin(websocket, CLIENTS, auth, channels, default_channel)
         print(f"+ {auth.username} has been authorized.")
+        message['type'] = 'auth_success'
+        await context[2].handleMessage(message, websocket, CLIENTS, context)
 
     else:
         await websocket.send(formatMessage('auth', new_account = False, success = False))
         await websocket.close(1011, 'Invalid Token')
+        message['type'] = 'auth_fail'
+        await context[2].handleMessage(message, websocket, CLIENTS, context)
+        print(f"* {auth.username} has failed to be authorized.")
         return 'Exit'
 
 async def message(message, websocket, CLIENTS, context):

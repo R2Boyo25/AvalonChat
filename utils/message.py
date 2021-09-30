@@ -13,6 +13,9 @@ class Message:
     
     def __getitem__(self, item):
         return self.message[item]
+    
+    def __setitem__(self, item, value):
+        self.message[item] = value
 
     def __str__(self):
         return json.dumps(self.message)

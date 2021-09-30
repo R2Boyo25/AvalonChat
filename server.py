@@ -24,7 +24,7 @@ CLIENTS = []
 async def handleConnection(websocket, path):
     global channels
 
-    if await plugins.handleConnect(websocket, CLIENTS, (channels, default_channel)) == 'Exit':
+    if await plugins.handleConnect(websocket, CLIENTS, (channels, default_channel, plugins)) == 'Exit':
         return
 
     async for message in websocket:
@@ -33,7 +33,7 @@ async def handleConnection(websocket, path):
             await delDuplicateWebsockets()
             message = Message(message)
 
-            if await plugins.handleMessage(message, websocket, CLIENTS, (channels, default_channel)) == 'Exit':
+            if await plugins.handleMessage(message, websocket, CLIENTS, (channels, default_channel, plugins)) == 'Exit':
                 return
 
         except asyncio.exceptions.CancelledError:
@@ -59,7 +59,7 @@ async def handleConnection(websocket, path):
                         del CLIENTS[iii]
             del CLIENTS[j]
     
-    if await plugins.handleDisconnect(websocket, CLIENTS, (channels, default_channel)) == 'Exit':
+    if await plugins.handleDisconnect(websocket, CLIENTS, (channels, default_channel, plugins)) == 'Exit':
         return
 
 async def updateChannelList():
