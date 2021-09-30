@@ -60,5 +60,6 @@ async def getUserList(webs, clients, auth):
         )
     )
 
-async def sendToAll(webs, clients, message):
-    pass
+async def sendToAll(ws, CLIENTS, message):
+    for j, i in enumerate(CLIENTS):
+        await i[2].send(message)
