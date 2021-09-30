@@ -1,6 +1,7 @@
 import utils.tokens as tokens
 from utils.message import *
 from utils.auth import Auth
+import utils.plugin as plugins
 
 import asyncio
 import websockets
@@ -11,7 +12,7 @@ try:
 except:
     port = 8090
 
-os.system('clear')
+#os.system('clear')
 
 with open('channels.json', 'r') as f:
     channels = json.load(f)
@@ -20,8 +21,11 @@ default_channel = 'general'
 
 CLIENTS = []
 
-async def handleMessage(websocket, path):
+async def handleConnection(websocket, path):
     global channels
+
+    if await plugins.handleConnect(websocket, CLIENTS, (channels, default_channel)) == 'Exit':
+        return
 
     async for message in websocket:
         try:
@@ -29,55 +33,8 @@ async def handleMessage(websocket, path):
             await delDuplicateWebsockets()
             message = Message(message)
 
-            if message['type'] == 'auth':
-                auth = Auth(websocket, message)
-
-                if auth.isvalid:
-                    CLIENTS.append((auth.token, auth.username, websocket))
-                    websocket.id = len(CLIENTS)
-                    websocket.auth = auth
-
-                    await handleLogin(websocket, CLIENTS, auth, channels, default_channel)
-                    print(f"+ {auth.username} has been authorized.")
-
-                else:
-                    await websocket.send(formatMessage('auth', new_account = False, success = False))
-                    await websocket.close(1011, 'Invalid Token')
-                    return
-            
-            elif message['type'] == 'user_list':
-                await websocket.send(json.dumps(await getUserList(websocket, CLIENTS, websocket.auth)))
-            
-            elif message['type'] == 'typing':
-                for i in CLIENTS:
-                    if i[2] != websocket:
-                        await i[2].send(formatMessage('typing', username = i[1]))
-            
-            elif message['type'] == 'direct_message':
-                for i in CLIENTS:
-                    if i[1] == message['recipient']:
-                        await i[2].send(formatMessage('direct_message', author = websocket.auth.username, message = message['message']))
-
-            elif message['type'] == 'message':
-                try:
-                    channel = message['channel']
-                    for ii, i in enumerate(CLIENTS):
-                        if i[2] != websocket:
-                            try:
-                                await i[2].send(formatMessage('message', channel = channel, author = websocket.auth.username, message = message['message']))
-                            except:
-                                del CLIENTS[ii]
-                            print(f"{channel} -> {i[1]}: {message['message']}")
-
-                except:
-                    channel = default_channel
-                    for ii, i in enumerate(CLIENTS):
-                        if i[2] != websocket:
-                            try:
-                                await i[2].send(formatMessage('message', channel = channel, author = websocket.auth.username, message = message['message']))
-                            except:
-                                del CLIENTS[ii]
-                            print(f"{channel} -> {i[1]}: {message['message']}")
+            if await plugins.handleMessage(message, websocket, CLIENTS, (channels, default_channel)) == 'Exit':
+                return
 
         except asyncio.exceptions.CancelledError:
             for j, i in enumerate(CLIENTS):
@@ -101,6 +58,9 @@ async def handleMessage(websocket, path):
                     except:
                         del CLIENTS[iii]
             del CLIENTS[j]
+    
+    if await plugins.handleDisconnect(websocket, CLIENTS, (channels, default_channel)) == 'Exit':
+        return
 
 async def updateChannelList():
     global channels
@@ -125,13 +85,16 @@ async def delDuplicateWebsockets():
                     await i[2].close()
                 except:
                     pass
-                del CLIENTS[j]
+                try:
+                    del CLIENTS[j]
+                except:
+                    pass
 
 
 async def main():
     global channels
     print('Server Ready')
-    async with websockets.serve(handleMessage, "0.0.0.0", port, ping_timeout=None, ping_interval=None):
+    async with websockets.serve(handleConnection, "0.0.0.0", port, ping_timeout=None, ping_interval=None):
         try:
             await asyncio.Future()  # run forever
         except:
