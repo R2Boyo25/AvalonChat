@@ -26,6 +26,8 @@ def getHandlers(plugins):
     for plugin in plugins:
         for handlername in getAttrs(plugin):
             handler = getattr(plugin, handlername)
+            if str(type(handler)) == "function":
+                continue
             if not handlername in handlers.keys():
                 handlers[handlername] = []
             

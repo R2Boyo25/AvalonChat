@@ -18,7 +18,7 @@ class Message:
         self.message[item] = value
 
     def __str__(self):
-        return json.dumps(self.message)
+        return json.dumps(self.message, indent = 4)
 
 async def handleLogin(webs, clients, auth, channels, default_channel):
 
