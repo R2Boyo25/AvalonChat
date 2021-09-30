@@ -12,7 +12,7 @@ try:
 except:
     port = 8090
 
-#os.system('clear')
+os.system('clear')
 
 with open('channels.json', 'r') as f:
     channels = json.load(f)
