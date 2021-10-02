@@ -6,18 +6,16 @@ import asyncio
 import websockets
 import json, random, os, sys
 
+messages = []
+
 async def message(message, websocket, CLIENTS, context):
-    return 
     default_channel = context[1]
     channels = context[0]
-    print('message')
+    
+    channel = message['channel'] if 'channel' in message.keys() else default_channel
 
-    messages.append(message)
-    print(messages)
+    messages.append(formatMessage('message', channel = channel, author = websocket.auth.username, message = message['message']))
 
 async def auth_success(message, websocket, CLIENTS, context):
-    return
-    print('auth')
-    for i in messages:
-        print(str(i))
-        await websocket.send(str(i))
+    for message in messages:
+        await websocket.send(message)

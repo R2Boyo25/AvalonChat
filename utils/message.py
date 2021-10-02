@@ -19,6 +19,9 @@ class Message:
 
     def __str__(self):
         return json.dumps(self.message, indent = 4)
+    
+    def keys(self):
+        return self.message.keys()
 
 async def handleLogin(webs, clients, auth, channels, default_channel):
 

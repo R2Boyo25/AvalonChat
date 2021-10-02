@@ -23,6 +23,10 @@ async def auth(message, websocket, CLIENTS, context):
         message['type'] = 'auth_success'
         await context[2].handleMessage(message, websocket, CLIENTS, context)
 
+        #for existingMessage in context[3]['plugins.logging'].messages:
+        #    print(str(existingMessage))
+        #    await websocket.send(str(existingMessage))
+
     else:
         await websocket.send(formatMessage('auth', new_account = False, success = False))
         await websocket.close(1011, 'Invalid Token')
