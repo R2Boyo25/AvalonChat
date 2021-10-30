@@ -1,4 +1,4 @@
-# WeebSockets2
+# AvalonChat
 My implementation of the WeebSockets RFC, by Anonymous Dapper
 
 Link to RFC:
